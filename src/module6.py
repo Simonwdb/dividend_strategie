@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 
 st.set_page_config(page_title='Dividend Strategy Dashboard', layout='wide')
 st.title('Dividend Capture Strategy Dashboard')
@@ -36,6 +37,18 @@ with tab1:
                 st.error(f'Error processing file: {e}')
     else:
         None
+    
+    with st.form('strategy_form'):
+        col1, col2 = st.columns(2)
+        with col1:
+            x_days = st.number_input('Days before ex-dividend date', min_value=0, value=3)
+            y_days = st.number_input('Days after ex-dividend date', min_value=0, value=3)
+        with col2:
+            start_date = st.date_input('Start date', value=datetime(2019, 1, 1))
+            end_date = st.date_input('End date', value=datetime(2024, 12, 31))
+            benchmark_ticker = st.text_input('Select Benchmark (e.q. SPY)', 'SPY')
+        
+        submit_button = st.form_submit_button('Execute Strategy')
 
 
 with tab2:
