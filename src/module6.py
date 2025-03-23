@@ -119,6 +119,34 @@ with tab2:
 with tab3:
     st.header('Summarize and Reports')
 
+    if 'df' in st.session_state:
+        df = st.session_state['df']
+        params = st.session_state['params']
+
+        if st.session_state.get('multi', False):
+            tickers = sorted(df['ticker'].unique())
+            selected_ticker = st.selectbox('Filter Ticker', ['All'] + tickers)
+            if selected_ticker != 'All':
+                df = df[df['ticker'] == selected_ticker]
+
+        stats = analyze_resulst(df=df)
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric('Total trades', stats.get('total_trades', 0))
+            st.metric('Negative trades'), stats.get('negative_trades', 0)
+        with col2:
+            st.metric('Profitable trades', stats.get('positive_trades', 0))
+            profit_perc = stats.get('profit_percentage', 0)
+            st.metric('Profit percentage', f'{profit_perc:.2f}')
+        with col3:
+            avg_return = stats.get('average_return', 0)
+            st.metric('Average return', f'€ {avg_return:.2f}')
+            total_return = stats.get('total_return', 0)
+            st.metric('Totale return', f'€ {total_return:.2f}')
+
+
 with tab4:
     st.header('Visuals per Ticker')
 
