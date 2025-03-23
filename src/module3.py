@@ -4,8 +4,8 @@ from datetime import timedelta
 from module1 import StrategyParameters
 
 def enrich_dataframe_with_prices(df: pd.DataFrame, params: StrategyParameters) -> pd.DataFrame:
-    df["buy_date"] = df["ex_date"] - pd.to_timedelta(params.days_before_ex_div, unit="d")
-    df["sell_date"] = df["ex_date"] + pd.to_timedelta(params.days_after_ex_div, unit="d")
+    df["buy_date"] = df["ex_date"] - pd.to_timedelta(params.days_before_threshold, unit="d")
+    df["sell_date"] = df["ex_date"] + pd.to_timedelta(params.days_after_threshold, unit="d")
 
     min_date = df["buy_date"].min() - timedelta(days=5)
     max_date = df["sell_date"].max() + timedelta(days=5)
