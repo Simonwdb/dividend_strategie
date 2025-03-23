@@ -9,6 +9,14 @@ from module2 import (
 from module3 import enrich_dataframe_with_prices
 from module4 import calculate_returns
 from module5 import analyze_resulst
+from module6 import (
+    plot_returns_over_time,
+    plot_return_distribution,
+    plot_cumulative_return,
+    plot_dividend_vs_return,
+    plot_return_histogram,
+    plot_vs_benchmark
+)
 
 st.set_page_config(page_title='Dividend Strategy Dashboard', layout='wide')
 st.title('Dividend Capture Strategy Dashboard')
@@ -157,8 +165,7 @@ with tab4:
         df_ticker = df[df['ticker'] == selected_ticker]
 
         with st.expander('Return over time', expanded=True):
-            # fig = plot_returns_over_time(df_ticker)
-            None
+            fig = plot_returns_over_time(df_ticker)
 
 with tab5:
     st.header('Annual Analysis')
