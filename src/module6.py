@@ -96,7 +96,7 @@ with tab2:
 
         if st.session_state.get('multi', False):
             tickers = sorted(df['ticker'].unique())
-            selected_ticker = st.selectbox('Filter Ticker', ['All'] + tickers)
+            selected_ticker = st.selectbox('Filter Ticker', ['All'] + tickers, key='analyze_ticker')
             if selected_ticker != 'All':
                 df = df[df['ticker'] == selected_ticker]
         
@@ -135,7 +135,7 @@ with tab3:
 
         with col1:
             st.metric('Total trades', stats.get('total_trades', 0))
-            st.metric('Negative trades'), stats.get('negative_trades', 0)
+            st.metric('Negative trades', stats.get('negative_trades', 0))
         with col2:
             st.metric('Profitable trades', stats.get('positive_trades', 0))
             profit_perc = stats.get('profit_percentage', 0)
