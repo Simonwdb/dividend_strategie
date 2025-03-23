@@ -150,6 +150,16 @@ with tab3:
 with tab4:
     st.header('Visuals per Ticker')
 
+    if 'df' in st.session_state:
+        df = st.session_state['df']
+        ticker_options = sorted(df['ticker'].unique())
+        selected_ticker = st.selectbox('Select one Ticker', ticker_options, key='visual_indiv')
+        df_ticker = df[df['ticker'] == selected_ticker]
+
+        with st.expander('Return over time', expanded=True):
+            # fig = plot_returns_over_time(df_ticker)
+            None
+
 with tab5:
     st.header('Annual Analysis')
 
