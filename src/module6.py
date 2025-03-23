@@ -8,7 +8,7 @@ st.title('Dividend Capture Strategy Dashboard')
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     'Strategy Setup',
     'Results',
-    'Analyze Results'
+    'Analyze Results',
     'Visuals (individual)',
     'Annual Analysis',
     'Visuals (comparison)'
