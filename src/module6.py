@@ -22,3 +22,7 @@ def plot_cumulative_return(df: pd.DataFrame) -> px.line:
     df['cumulative_return'] = df['total_return'].cumsum()
     fig = px.line(df, x='ex_date', y='cumulative_return', title='Cumulative Return')
     return fig
+
+def plot_dividend_vs_return(df: pd.DataFrame) -> px.scatter:
+    fig = px.scatter(df, x='dvidend', y='total_return', trendline='ols', title='Dividend vs Return')
+    return fig
