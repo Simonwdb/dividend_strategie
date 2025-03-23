@@ -1,7 +1,7 @@
 import pandas as pd
 import yfinance as yf
 from datetime import timedelta
-from src.module1 import StrategyParameters
+from module1 import StrategyParameters
 
 def enrich_dataframe_with_prices(df: pd.DataFrame, params: StrategyParameters) -> pd.DataFrame:
     df["buy_date"] = df["ex_date"] - pd.to_timedelta(params.days_before_ex_div, unit="d")
