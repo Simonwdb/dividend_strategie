@@ -139,7 +139,7 @@ with tab3:
         with col2:
             st.metric('Profitable trades', stats.get('positive_trades', 0))
             profit_perc = stats.get('profit_percentage', 0)
-            st.metric('Profit percentage', f'{profit_perc:.2f}')
+            st.metric('Profit percentage', f'{profit_perc:.2f} %')
         with col3:
             avg_return = stats.get('average_return', 0)
             st.metric('Average return', f'€ {avg_return:.2f}')
