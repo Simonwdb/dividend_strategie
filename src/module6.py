@@ -1,6 +1,14 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+from module1 import StrategyParameters
+from module2 import (
+    get_dividend_events,
+    events_to_dataframe
+)
+from module3 import enrich_dataframe_with_prices
+from module4 import calculate_returns
+from module5 import analyze_resulst
 
 st.set_page_config(page_title='Dividend Strategy Dashboard', layout='wide')
 st.title('Dividend Capture Strategy Dashboard')
@@ -49,6 +57,37 @@ with tab1:
             benchmark_ticker = st.text_input('Select Benchmark (e.q. SPY)', 'SPY')
         
         submit_button = st.form_submit_button('Execute Strategy')
+    
+    if submit_button and tickers:
+        all_results = []
+
+        for ticker in tickers:
+            params = StrategyParameters(
+                ticker=ticker,
+                days_before_threshold=int(x_days),
+                days_after_threshold=int(y_days),
+                start_date=datetime.combine(start_date, datetime.min.time()),
+                end_date=datetime.combine(end_date, datetime.min.time())
+            )
+        
+            events = get_dividend_events(params.ticker, params.start_date, params.end_date)
+            df = events_to_dataframe(events=events)
+            df = enrich_dataframe_with_prices(df=df, params=params)
+            df = calculate_returns(df=df)
+            df['ticker'] = ticker
+            stats = analyze_resulst(df=df)
+
+            all_results.append((df, stats, params))
+        
+        if all_results:
+            full_df = pd.concat([x[0] for x in all_results], ignore_index=True)
+            st.session_state['df'] = full_df
+            st.session_state['params'] = params
+            st.session_state['benchmark'] = benchmark_ticker
+            st.session_state['multi'] = len(tickers) > 1
+            st.success('Strategy executed successfully')
+
+
 
 
 with tab2:
