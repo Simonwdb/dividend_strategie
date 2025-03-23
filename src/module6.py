@@ -21,10 +21,10 @@ with tab1:
     upload_option = st.radio('Select input form', ['Manual input', 'Upload Excel list'], horizontal=True)
     tickers = []
 
-    if upload_option == 'Manual':
+    if upload_option == 'Manual input':
         ticker_input = st.text_area('Enter tickers (comma or line separated)', 'AAPL\nMSFT\nPG')
         if ticker_input:
-            tickers = [tick.strip() for tick in ticker_input.replace(',', '\n').splitlines if tick.strip()]
+            tickers = [tick.strip() for tick in ticker_input.replace(',', '\n').splitlines() if tick.strip()]
     elif upload_option == 'Upload Excel list':
         uploaded_file = st.file_uploader('Upload Excel file with column "Ticker"', type=['xlsx'])
         if upload_option is not None:
