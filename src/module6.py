@@ -16,3 +16,9 @@ def plot_return_distribution(df: pd.DataFrame) -> px.bar:
         title='Return per Event'
     )
     return fig
+
+def plot_cumulative_return(df: pd.DataFrame) -> px.line:
+    df = df.sort_values('ex_date').copy()
+    df['cumulative_return'] = df['total_return'].cumsum()
+    fig = px.line(df, x='ex_date', y='cumulative_return', title='Cumulative Return')
+    return fig
