@@ -26,3 +26,7 @@ def plot_cumulative_return(df: pd.DataFrame) -> px.line:
 def plot_dividend_vs_return(df: pd.DataFrame) -> px.scatter:
     fig = px.scatter(df, x='dvidend', y='total_return', trendline='ols', title='Dividend vs Return')
     return fig
+
+def plot_return_histogram(df: pd.DataFrame) -> px.histogram:
+    fig = px.histogram(df, x='total_return', nbins=20, title='Distribution of Returns')
+    return fig
