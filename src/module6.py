@@ -87,11 +87,34 @@ with tab1:
             st.session_state['multi'] = len(tickers) > 1
             st.success('Strategy executed successfully')
 
-
-
-
 with tab2:
     st.header('Dividend Events & Trades')
+
+    if 'df' in st.session_state:
+        df = st.session_state['df']
+        selected_ticker = None
+
+        if st.session_state.get('multi', False):
+            tickers = sorted(df['ticker'].unique())
+            selected_ticker = st.selectbox('Filter Ticker', ['All'] + tickers)
+            if selected_ticker != 'All':
+                df = df[df['ticker'] == selected_ticker]
+        
+        st.dataframe(
+            df.style.format({
+                'price_buy': '{:.2f}',
+                'price_sell': '{:.2f}',
+                'dividend': '{:.2f}',
+                'total_return': '{:.2f}',
+            })
+        )
+        st.download_button(
+            'Download as CSV',
+            data = df.to_csv(index=False),
+            file_name = 'results_strategy.csv'
+        )
+    else:
+        st.info('First execute strategy.')
 
 with tab3:
     st.header('Summarize and Reports')
