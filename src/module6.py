@@ -17,6 +17,9 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 with tab1:
     st.header('Strategy Setup')
 
+    st.subheader('Tickers Input')
+    upload_option = st.radio('Select input form', ['Manual input', 'Upload Excel list'], horizontal=True)
+
 with tab2:
     st.header('Dividend Events & Trades')
 
