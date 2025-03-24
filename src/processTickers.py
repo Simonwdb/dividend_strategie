@@ -5,7 +5,7 @@ import yfinance as yf
 from tqdm import tqdm
 from joblib import Memory
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Cache configuration
@@ -107,3 +107,42 @@ def clean_and_format_data(df: pd.DataFrame, column_order: List[str]) -> pd.DataF
     temp_df = temp_df[column_order + remaining_columns]
 
     return temp_df
+
+
+def get_stock_data(
+        tickers: Union[List[str], str], 
+        relevant_keys: List[str],
+        column_order: List[str], 
+        max_workers: int = 5, 
+        batch_size: int = 100, 
+        clear_cache: bool = False
+) -> pd.DataFrame:
+    if clear_cache:
+        memory.clear()
+        logger.info('Cache deleted')
+
+    if isinstance(tickers, str):
+        tickers = [tickers]
+    
+    if not tickers:
+        logger.warning('No tickers are given')
+        return pd.DataFrame()
+    
+    logger.info(f'Start with extracting data for {len(tickers)} tickers')
+
+    try:
+        df = fetch_tickers(
+            tickers=tickers,
+            relevant_keys=relevant_keys, 
+            max_workers=max_workers,
+            batch_size=batch_size
+        )
+
+        df = clean_and_format_data(df=df, column_order=column_order)
+
+        logger.info(f'Successfully added {len(df)} records')
+        return df
+
+    except Exception as e:
+        logger.error(f'Error in get_stock_data: {str(e)}')
+        return pd.DataFrame()
