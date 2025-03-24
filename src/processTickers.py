@@ -14,15 +14,15 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 memory = Memory(CACHE_DIR, verbose=0)
 
 # Logging configuration
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("stock_data.log"),
-        logging.StreamHandler()
-    ]
-)
-
+if not logging.getLogger().hasHandlers():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler("./tests/stock_data.log"),
+            logging.StreamHandler()
+        ]
+    )
 logger = logging.getLogger(__name__)
 
 # Core functions
