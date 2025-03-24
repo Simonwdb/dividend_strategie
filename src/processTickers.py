@@ -55,6 +55,7 @@ def get_single_data(ticker: str) -> dict:
         price_target = ticker_yf.get_analyst_price_targets()['current']
     except KeyError as e:
         price_target = None
+        logger.debug(f'Price target not available for {ticker}: {str(e)}')
     
     info['priceTarget'] = price_target
     info['ticker'] = ticker
@@ -70,9 +71,11 @@ def get_stock_data(ticker_list: List[str]) -> pd.DataFrame:
             temp_dict = get_single_data(ticker=ticker)
             results.append(temp_dict)
         except AttributeError as e:
+            logger.debug(f'No data available on yfinance for {ticker}: {str(e)}')
             continue
     
     result_df = pd.DataFrame(results)
+    logger.info(f'Succesfully added {len(result_df)} records')
     return result_df
 
 
@@ -97,3 +100,4 @@ def rearrange_columns(df: pd.DataFrame) -> pd.DataFrame:
 def save_to_sqlite(df: pd.DataFrame, table_name: str, path: str=DB_PATH) -> None:
     with sqlite3.connect(path) as conn:
         df.to_sql(table_name, conn, if_exists='replace', index=False)
+        logger.info(f'Data successfully saved in {path} (table: {table_name})')
