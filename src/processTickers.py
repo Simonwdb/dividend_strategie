@@ -53,6 +53,18 @@ def save_to_sqlite(df: pd.DataFrame, table_name: str) -> None:
         raise
 
 
+def load_checkpoint(checkpoint_file: str) -> tuple:
+    checkpoint_path = os.path.join(PICKLE_DIR, checkpoint_file)
+    try:
+        checkpoint_df = pd.read_pickle(checkpoint_path)
+        processed_tickers = set(checkpoint_df['ticker'])
+        results = checkpoint_df.to_dict('records')
+        return processed_tickers, results
+    except Exception as e:
+        logger.debug(f'No checkpoint founded: {str(e)}')
+        return set(), []
+    
+
 @memory.cache
 def get_single_ticker_date(ticker: str, relevant_keys: List[str], retries: int = 2) -> Optional[List[dict]]:
     for attempt in range(retries + 1):
