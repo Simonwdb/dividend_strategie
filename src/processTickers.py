@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List
 
 # global variables
-RELEVENT_KEYS = ['city', 'state', 'zip', 'country', 'industry', 'sector', 'fullTimeEmployees', 'auditRisk', 'boardRisk', 'compensationRisk', 'shareHolderRightsRisk', 
+RELEVANT_KEYS = ['city', 'state', 'zip', 'country', 'industry', 'sector', 'fullTimeEmployees', 'auditRisk', 'boardRisk', 'compensationRisk', 'shareHolderRightsRisk', 
                  'overallRisk', 'compensationAsOfEpochDate', 'priceHint', 'previousClose', 'open', 'dayLow', 'dayHigh', 'regularMarketPreviousClose', 'regularMarketOpen', 
                  'regularMarketDayLow', 'regularMarketDayHigh', 'dividendRate', 'dividendYield', 'exDividendDate', 'payoutRatio', 'fiveYearAvgDividendYield', 'beta', 'trailingPE', 
                  'forwardPE', 'volume', 'regularMarketVolume', 'averageVolume', 'averageVolume10days', 'averageDailyVolume10Day', 'bid', 'ask', 'bidSize', 'askSize', 'marketCap', 
@@ -36,7 +36,7 @@ def get_single_data(ticker: str) -> dict:
     ticker_yf = yf.Ticker(ticker=ticker)
     info = ticker_yf.info
 
-    info = {key: info.get(key, None) for key in RELEVENT_KEYS}
+    info = {key: info.get(key, None) for key in RELEVANT_KEYS}
 
     try:
         price_target = ticker_yf.get_analyst_price_targets()['current']
