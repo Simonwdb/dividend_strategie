@@ -80,7 +80,7 @@ def clear_checkpoint(checkpoint_file: str) -> None:
     if os.path.exists(checkpoint_path):
         os.remove(checkpoint_path)
         logger.info('Checkpoint deleted')
-        
+
 
 @memory.cache
 def get_single_ticker_date(ticker: str, relevant_keys: List[str], retries: int = 2) -> Optional[List[dict]]:
@@ -202,3 +202,25 @@ def get_stock_data(
     except Exception as e:
         logger.error(f'Error in get_stock_data: {str(e)}')
         return pd.DataFrame()
+    
+
+def process_ticker_chunk(
+        chunk: List[str],
+        relevant_keys: List[str],
+        column_order: List[str],
+        max_workers: int,
+        batch_size: int,
+) -> pd.DataFrame:
+    try:
+        return get_stock_data(
+            tickers=chunk,
+            relevant_keys=relevant_keys,
+            column_order=column_order, 
+            max_workers=max_workers,
+            batch_size=min(batch_size, len(chunk)),
+            clear_cache=False
+        )
+    except Exception as e:
+        logger.error(f'Processing chunk failed: {str(e)}')
+        return pd.DataFrame()
+    
