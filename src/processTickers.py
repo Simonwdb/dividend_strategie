@@ -38,7 +38,7 @@ if not logging.getLogger().hasHandlers():
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler("stock_data.log"),
+            logging.FileHandler("../tests/stock_data.log"),
             logging.StreamHandler()
         ]
     )
