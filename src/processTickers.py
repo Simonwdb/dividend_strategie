@@ -9,8 +9,16 @@ from datetime import datetime
 from typing import Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+
+CACHE_DIR = '../data/cache/yfinance_cache'
+DB_PATH = '../data/database/stock_data.db'
+PICKLE_DIR = '../data/pickle/'
+
+# Making sure the directories exists
+os.makedirs(DB_PATH, exist_ok=True)
+os.makedirs(PICKLE_DIR, exist_ok=True)
+
 # Cache configuration
-CACHE_DIR = '.data/cache/yfinance_cache'
 os.makedirs(CACHE_DIR, exist_ok=True)
 memory = Memory(CACHE_DIR, verbose=0)
 
