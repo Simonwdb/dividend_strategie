@@ -1,4 +1,5 @@
 import os
+import time
 import logging
 import pandas as pd
 import yfinance as yf
@@ -12,6 +13,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 CACHE_DIR = '.data/cache/yfinance_cache'
 os.makedirs(CACHE_DIR, exist_ok=True)
 memory = Memory(CACHE_DIR, verbose=0)
+
+def clear_old_cache(days: int = 7):
+    now = time.time()
+    for f in os.listdir(CACHE_DIR):
+        f_path = os.path.join(CACHE_DIR, f)
+        if os.stat(f_path).st_mtime < now - days * 86400:
+            os.remove(f_path)
 
 # Logging configuration
 if not logging.getLogger().hasHandlers():
