@@ -46,3 +46,16 @@ def get_single_data(ticker: str) -> dict:
     info['lastUpdated'] = datetime.now().isoformat()
 
     return info
+
+
+def get_stock_data(ticker_list: List[str]) -> pd.DataFrame:
+    results = []
+    for ticker in ticker_list:
+        try:
+            temp_dict = get_single_data(ticker=ticker_list)
+            results.append(temp_dict)
+        except AttributeError as e:
+            continue
+    
+    result_df = pd.DataFrame(results)
+    return result_df
