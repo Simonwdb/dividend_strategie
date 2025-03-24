@@ -16,7 +16,7 @@ DB_PATH = '../data/database/stock_data.db'
 PICKLE_DIR = '../data/pickle/'
 
 # Making sure the directories exists
-os.makedirs(DB_PATH, exist_ok=True)
+# os.makedirs(DB_PATH, exist_ok=True)
 os.makedirs(PICKLE_DIR, exist_ok=True)
 
 # Cache configuration
@@ -36,7 +36,7 @@ if not logging.getLogger().hasHandlers():
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler("./tests/stock_data.log"),
+            logging.FileHandler("stock_data.log"),
             logging.StreamHandler()
         ]
     )
