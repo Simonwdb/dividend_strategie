@@ -2,3 +2,4 @@ personal/
 tests/
 src/__pycache__
 data/database/
+data/cache/
