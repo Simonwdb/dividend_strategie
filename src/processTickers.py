@@ -63,7 +63,16 @@ def load_checkpoint(checkpoint_file: str) -> tuple:
     except Exception as e:
         logger.debug(f'No checkpoint founded: {str(e)}')
         return set(), []
-    
+
+
+def save_checkpoint(results: List[dict], checkpoint_file: str) -> None:
+    checkpoint_path = os.path.join(PICKLE_DIR, checkpoint_file)
+    try:
+        temp_df = pd.DataFrame(results)
+        temp_df.to_pickle(checkpoint_path)
+        logger.debug('Checkpoint saved')
+    except Exception as e:
+        logger.error(f'Saving checkpoint failed: {str(e)}')
 
 @memory.cache
 def get_single_ticker_date(ticker: str, relevant_keys: List[str], retries: int = 2) -> Optional[List[dict]]:
