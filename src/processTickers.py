@@ -224,8 +224,56 @@ def process_ticker_chunk(
         logger.error(f'Processing chunk failed: {str(e)}')
         return pd.DataFrame()
     
+
 def update_results(chunk_df: pd.DataFrame, results: List[dict], processed_tickers: Set[str]) -> None:
     if not chunk_df.empty:
         new_records = chunk_df.to_dict('records')
         results.extend(new_records)
         processed_tickers.update(chunk_df['ticker'].to_list())
+
+
+def process_tickers_with_checkpoints(
+        tickers: Union[List[str], str], 
+        relevant_keys: List[str],
+        column_order: List[str],
+        chunk_size: int = 500,
+        max_workers: int = 6, 
+        batch_size: int = 100,
+        checkpoint_file: str = 'checkpoint.pkl',
+        retry_failed: bool = True,
+        clear_checkpoint: bool = False,
+        save_to_db: bool = True,
+) -> pd.DataFrame:
+    if isinstance(tickers, str):
+        tickers = [tickers]
+    
+    if not tickers:
+        logger.warning('No tickers are given')
+        return pd.DataFrame()
+    
+    if clear_checkpoint:
+        clear_checkpoint(checkpoint_file=checkpoint_file)
+    
+    processed_tickers, results = load_checkpoint(checkpoint_file=checkpoint_file)
+    remaining_tickers = [t for t in tickers if t not in processed_tickers]
+    tickers_to_process = remaining_tickers if retry_failed else tickers
+
+    for i in tqdm(range(0, len(tickers_to_process), chunk_size), desc=f'Processing {len(tickers_to_process)} tickers'):
+        chunk = tickers_to_process[i:i + chunk_size]
+
+        chunk_df = process_ticker_chunk(
+            chunk=chunk,
+            relevant_keys=relevant_keys,
+            column_order=column_order,
+            max_workers=max_workers,
+            batch_size=batch_size
+        )
+
+        update_results(chunk_df=chunk, processed_tickers=processed_tickers)
+        save_checkpoint(results=results, checkpoint_file=checkpoint_file)
+    
+    final_df = pd.DataFrame(results)
+    if not final_df.empty:
+        final_df = clean_and_format_data(df=final_df, column_order=column_order)
+   
+    return final_df
