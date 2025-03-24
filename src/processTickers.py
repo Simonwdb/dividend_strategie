@@ -2,8 +2,10 @@ import sqlite3
 import logging
 import pandas as pd
 import yfinance as yf
-from datetime import datetime
+from tqdm import tqdm
 from typing import List
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # global variables
 RELEVANT_KEYS = ['city', 'state', 'zip', 'country', 'industry', 'sector', 'fullTimeEmployees', 'auditRisk', 'boardRisk', 'compensationRisk', 'shareHolderRightsRisk', 
@@ -62,6 +64,32 @@ def get_single_data(ticker: str) -> dict:
     info['lastUpdated'] = datetime.now().isoformat()
 
     return info
+
+
+def fetch_data_tickers(ticker_list: List[str], max_workers: int = 5, batch_size: int = 100) -> pd.DataFrame:
+    all_results = []
+    
+    for i in range(0, len(ticker_list), batch_size):
+        batch = ticker_list[i:i + batch_size]
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_ticker = {
+                executor.submit(
+                    get_single_data,
+                    ticker
+                ): ticker for ticker in batch
+            }
+
+            for future in as_completed(future_to_ticker):
+                ticker = future_to_ticker[future]
+                try:
+                    result = future.result()
+                    if result:
+                        all_results.append(result)
+                except Exception as e:
+                    logger.error(f'Unexpected error with {ticker}: {str(e)}')
+    
+    return pd.DataFrame(all_results)
 
 
 def get_stock_data(ticker_list: List[str]) -> pd.DataFrame:
