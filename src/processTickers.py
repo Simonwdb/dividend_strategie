@@ -69,3 +69,11 @@ def convert_timestamps(df: pd.DataFrame) -> pd.DataFrame:
     
     return temp_df
 
+def rearrange_columns(df: pd.DataFrame) -> pd.DataFrame:
+    temp_df = df.copy()
+    existing_cols = temp_df.columns
+    remaining_cols = [col for col in existing_cols if col not in FAV_COLS]
+    column_order = FAV_COLS + remaining_cols
+    temp_df = temp_df[column_order]
+    return temp_df
+
