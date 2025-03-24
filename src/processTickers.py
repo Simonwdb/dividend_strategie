@@ -28,7 +28,7 @@ FAV_COLS = [
         'trailingAnnualDividendYield', 'earningsQuarterlyGrowth', 'revenueGrowth'
     ]
 
-DB_PATH = '../../data/database/stock_data.db'
+DB_PATH = '../data/database/stock_data.db'
 
 
 #  initial functions
@@ -81,6 +81,6 @@ def rearrange_columns(df: pd.DataFrame) -> pd.DataFrame:
     return temp_df
 
 
-def save_to_sqlite(df: pd.DataFrame, table_name: str) -> None:
-    with sqlite3.connect(DB_PATH) as conn:
+def save_to_sqlite(df: pd.DataFrame, table_name: str, path: str=DB_PATH) -> None:
+    with sqlite3.connect(path) as conn:
         df.to_sql(table_name, conn, if_exists='replace', index=False)
