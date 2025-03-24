@@ -1,6 +1,7 @@
 import sqlite3
-import yfinance as yf
+import logging
 import pandas as pd
+import yfinance as yf
 from datetime import datetime
 from typing import List
 
@@ -30,6 +31,18 @@ FAV_COLS = [
 
 DB_PATH = '../data/database/stock_data.db'
 
+
+# Logging configuration
+if not logging.getLogger().hasHandlers():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler("stock_data.log"),
+            logging.StreamHandler()
+        ]
+    )
+logger = logging.getLogger(__name__)
 
 #  initial functions
 def get_single_data(ticker: str) -> dict:
