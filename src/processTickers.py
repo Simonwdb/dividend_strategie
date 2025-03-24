@@ -2,6 +2,7 @@ import sqlite3
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
+from typing import List
 
 # global variables
 RELEVENT_KEYS = ['city', 'state', 'zip', 'country', 'industry', 'sector', 'fullTimeEmployees', 'auditRisk', 'boardRisk', 'compensationRisk', 'shareHolderRightsRisk', 
@@ -26,3 +27,22 @@ FAV_COLS = [
         'lastDividendValue', 'lastDividendDate', 'dividendYield', 'exDividendDate', 'dividendDate', 'fiveYearAvgDividendYield', 'trailingAnnualDividendRate', 
         'trailingAnnualDividendYield', 'earningsQuarterlyGrowth', 'revenueGrowth'
     ]
+
+
+#  initial functions
+def get_single_data(ticker: str) -> dict:
+    ticker_yf = yf.Ticker(ticker=ticker)
+    info = ticker_yf.info
+
+    info = {key: info.get(key, None) for key in RELEVENT_KEYS}
+
+    try:
+        price_target = ticker_yf.get_analyst_price_targets()['current']
+    except KeyError as e:
+        price_target = None
+    
+    info['priceTarget'] = price_target
+    info['ticker'] = ticker
+    info['lastUpdated'] = datetime.now().isoformat()
+
+    return info
