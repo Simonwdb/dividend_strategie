@@ -59,3 +59,13 @@ def get_stock_data(ticker_list: List[str]) -> pd.DataFrame:
     
     result_df = pd.DataFrame(results)
     return result_df
+
+
+def convert_timestamps(df: pd.DataFrame) -> pd.DataFrame:
+    temp_df = df.copy()
+    date_cols = [col for col in temp_df.columns if any(word in col.lower() for word in ['date', 'timestamp']) and temp_df[col].dtype == 'int64']
+    for col in date_cols:
+        temp_df[col] = pd.to_datetime(temp_df[col], unit='s', errors='coerce')
+    
+    return temp_df
+
