@@ -7,7 +7,7 @@ import yfinance as yf
 from tqdm import tqdm
 from joblib import Memory
 from datetime import datetime
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Set
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
@@ -224,3 +224,8 @@ def process_ticker_chunk(
         logger.error(f'Processing chunk failed: {str(e)}')
         return pd.DataFrame()
     
+def update_results(chunk_df: pd.DataFrame, results: List[dict], processed_tickers: Set[str]) -> None:
+    if not chunk_df.empty:
+        new_records = chunk_df.to_dict('records')
+        results.extend(new_records)
+        processed_tickers.update(chunk_df['ticker'].to_list())
