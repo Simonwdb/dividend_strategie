@@ -1,9 +1,12 @@
 import os
 import logging
+import pandas as pd
 import yfinance as yf
+from tqdm import tqdm
 from joblib import Memory
 from datetime import datetime
 from typing import Optional, List
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Cache configuration
 CACHE_DIR = '.data/cache/yfinance_cache'
@@ -53,3 +56,34 @@ def get_single_ticker_date(ticker: str, relevant_keys: List[str], retries: int =
                 logger.error(f'Error with {ticker} (attempt {attempt + 1}/{retries}): {str(e)}')
                 return None
             continue
+
+
+def fetch_tickers(tickers: List[str], relevant_keys: List[str], max_workers: int = 5, batch_size: int = 100) -> pd.DataFrame:
+    all_results = []
+    total_tickers = len(tickers)
+    with tqdm(total=total_tickers, desc='Process Tickers') as pbar:
+        for i in range(0, total_tickers, batch_size):
+            batch = tickers[i:i + batch_size]
+
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_ticker = {
+                    executor.submit(
+                        get_single_ticker_date,
+                        ticker,
+                        relevant_keys
+                    ): ticker for ticker in batch
+                }
+
+                for future in as_completed(future_to_ticker):
+                    ticker = future_to_ticker[future]
+                    try:
+                        result = future.result()
+                        if result:
+                            all_results.append(result)
+                    except Exception as e:
+                        logger.error(f'Unexpected error with {ticker}: {str(e)}')
+                    finally:
+                        pbar.update(1)
+
+    return pd.DataFrame(all_results)
+
