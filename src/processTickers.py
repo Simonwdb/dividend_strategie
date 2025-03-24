@@ -74,6 +74,14 @@ def save_checkpoint(results: List[dict], checkpoint_file: str) -> None:
     except Exception as e:
         logger.error(f'Saving checkpoint failed: {str(e)}')
 
+
+def clear_checkpoint(checkpoint_file: str) -> None:
+    checkpoint_path = os.path.join(PICKLE_DIR, checkpoint_file)
+    if os.path.exists(checkpoint_path):
+        os.remove(checkpoint_path)
+        logger.info('Checkpoint deleted')
+        
+
 @memory.cache
 def get_single_ticker_date(ticker: str, relevant_keys: List[str], retries: int = 2) -> Optional[List[dict]]:
     for attempt in range(retries + 1):
