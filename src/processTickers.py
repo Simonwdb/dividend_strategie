@@ -28,6 +28,8 @@ FAV_COLS = [
         'trailingAnnualDividendYield', 'earningsQuarterlyGrowth', 'revenueGrowth'
     ]
 
+DB_PATH = '../../data/database/stock_data.db'
+
 
 #  initial functions
 def get_single_data(ticker: str) -> dict:
@@ -77,3 +79,7 @@ def rearrange_columns(df: pd.DataFrame) -> pd.DataFrame:
     temp_df = temp_df[column_order]
     return temp_df
 
+
+def save_to_sqlite(df: pd.DataFrame, table_name: str) -> None:
+    with sqlite3.connect(DB_PATH) as conn:
+        df.to_sql(table_name, conn, if_exists='replace', index=False)
