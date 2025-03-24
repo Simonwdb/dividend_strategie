@@ -1,6 +1,7 @@
 import os
 import time
 import logging
+import sqlite3
 import pandas as pd
 import yfinance as yf
 from tqdm import tqdm
@@ -42,6 +43,16 @@ if not logging.getLogger().hasHandlers():
 logger = logging.getLogger(__name__)
 
 # Core functions
+def save_to_sqlite(df: pd.DataFrame, table_name: str) -> None:
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            df.to_sql(table_name, conn, if_exists='append', index=False)
+            logger.info(f'Data successfully saved in {DB_PATH} (table: {table_name})')
+    except Exception as e:
+        logger.error(f'Error by saving in database: {str(e)}')
+        raise
+
+
 @memory.cache
 def get_single_ticker_date(ticker: str, relevant_keys: List[str], retries: int = 2) -> Optional[List[dict]]:
     for attempt in range(retries + 1):
