@@ -87,3 +87,23 @@ def fetch_tickers(tickers: List[str], relevant_keys: List[str], max_workers: int
 
     return pd.DataFrame(all_results)
 
+
+# Data cleaning functions
+def clean_and_format_data(df: pd.DataFrame, column_order: List[str]) -> pd.DataFrame:
+    if df.empty:
+        return df
+    
+    temp_df = df.copy()
+
+    date_cols = [col for col in temp_df.columns if any(x in col.lower() for x in ['date', 'time'])]
+    for col in date_cols:
+        try:
+            temp_df[col] = pd.to_datetime(temp_df[col], unit='s', errors='coerce')
+        except Exception as e:
+            logger.warning(f'Unable to convert {col}: {str(e)}')
+
+    
+    remaining_columns = [col for col in temp_df.columns if col not in column_order]
+    temp_df = temp_df[column_order + remaining_columns]
+
+    return temp_df
