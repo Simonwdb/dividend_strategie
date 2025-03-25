@@ -85,3 +85,17 @@ class StockDataProcessor:
                         self.logger.error(f'Unexpected error with {ticker}: {str(e)}')
         
         return pd.DataFrame(all_results)
+    
+    def get_stock_data(self, ticker_list: List[str]) -> pd.DataFrame:
+        results = []
+        for ticker in ticker_list:
+            try:
+                temp_dict = self.get_single_ticker_data(ticker)
+                results.append(temp_dict)
+            except AttributeError as e:
+                self.logger.debug(f'No data available on yfinance for {ticker}: {str(e)}')
+                continue
+        
+        result_df = pd.DataFrame(results)
+        self.logger.info(f'Successfully added {len(result_df)} records')
+        return result_df
