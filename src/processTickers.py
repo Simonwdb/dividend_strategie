@@ -117,3 +117,10 @@ class StockDataProcessor:
                         continue
         
         return temp_df
+    
+    def rearrange_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+        temp_df = df.copy()
+        existing_cols = temp_df.columns
+        remaining_cols = [col for col in existing_cols if col not in self.FAV_COLS]
+        column_order = self.FAV_COLS + remaining_cols
+        return temp_df[column_order]
