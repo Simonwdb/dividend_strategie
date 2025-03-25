@@ -109,10 +109,19 @@ def get_stock_data(ticker_list: List[str]) -> pd.DataFrame:
 
 def convert_timestamps(df: pd.DataFrame) -> pd.DataFrame:
     temp_df = df.copy()
-    date_cols = [col for col in temp_df.columns if any(word in col.lower() for word in ['date', 'timestamp'])]
+    date_cols = [col for col in temp_df.columns 
+                if any(word in col.lower() for word in ['date', 'timestamp'])]
+    
     for col in date_cols:
         if temp_df[col].dtype != object:
-            temp_df[col] = pd.to_datetime(temp_df[col], unit='s', errors='coerce')
+            # Probeer verschillende eenheden
+            for unit in ['s', 'ms', 'us', 'ns']:
+                try:
+                    temp_df[col] = pd.to_datetime(temp_df[col], unit=unit, errors='coerce')
+                    if not temp_df[col].isnull().all():
+                        break  # Stop als conversie gelukt is
+                except (FloatingPointError, OverflowError):
+                    continue
     
     return temp_df
 
