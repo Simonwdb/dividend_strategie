@@ -62,3 +62,26 @@ class StockDataProcessor:
         info['lastUpdated'] = datetime.now().isoformat()
 
         return info
+    
+    def fetch_tickers_data(self, ticker_list: List[str], max_workers: int = 5, batch_size: int = 100) -> pd.DataFrame:
+        all_results = []
+        
+        for i in range(0, len(ticker_list), batch_size):
+            batch = ticker_list[i:i + batch_size]
+            
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_ticker = {
+                    executor.submit(self.get_single_ticker_data, ticker): ticker 
+                    for ticker in batch
+                }
+
+                for future in as_completed(future_to_ticker):
+                    ticker = future_to_ticker[future]
+                    try:
+                        result = future.result()
+                        if result:
+                            all_results.append(result)
+                    except Exception as e:
+                        self.logger.error(f'Unexpected error with {ticker}: {str(e)}')
+        
+        return pd.DataFrame(all_results)
