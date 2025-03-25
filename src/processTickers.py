@@ -1,5 +1,11 @@
 import logging
-
+import sqlite3
+import logging
+import pandas as pd
+import yfinance as yf
+from typing import List
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class StockDataProcessor:
     RELEVANT_KEYS = ['city', 'state', 'zip', 'country', 'industry', 'sector', 'fullTimeEmployees', 'auditRisk', 'boardRisk', 'compensationRisk', 'shareHolderRightsRisk', 
@@ -39,3 +45,20 @@ class StockDataProcessor:
                 ]
             )
         self.logger = logging.getLogger(__name__)
+
+    def get_single_ticker_data(self, ticker: str) -> dict:
+        ticker_yf = yf.Ticker(ticker=ticker)
+        info = ticker_yf.info
+        info = {key: info.get(key, None) for key in self.RELEVANT_KEYS}
+
+        try:
+            price_target = ticker_yf.get_analyst_price_targets()['current']
+        except KeyError as e:
+            price_target = None
+            self.logger.debug(f'Price target not available for {ticker}: {str(e)}')
+        
+        info['priceTarget'] = price_target
+        info['ticker'] = ticker
+        info['lastUpdated'] = datetime.now().isoformat()
+
+        return info
