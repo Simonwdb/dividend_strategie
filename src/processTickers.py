@@ -33,6 +33,7 @@ class StockDataProcessor:
 
     def __init__(self, db_path: str = '../data/database/stock_data.db'):
         self.db_path = db_path
+        self._setup_logging()
     
     def _setup_logging(self):
         if not logging.getLogger().hasHandlers():
