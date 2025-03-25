@@ -124,3 +124,8 @@ class StockDataProcessor:
         remaining_cols = [col for col in existing_cols if col not in self.FAV_COLS]
         column_order = self.FAV_COLS + remaining_cols
         return temp_df[column_order]
+    
+    def save_to_database(self, df: pd.DataFrame, table_name: str) -> None:
+        with sqlite3.connect(self.db_path) as conn:
+            df.to_sql(table_name, conn, if_exists='replace', index=False)
+            self.logger.info(f'Data successfully saved in {self.db_path} (table: {table_name})')
