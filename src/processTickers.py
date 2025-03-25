@@ -114,12 +114,11 @@ def convert_timestamps(df: pd.DataFrame) -> pd.DataFrame:
     
     for col in date_cols:
         if temp_df[col].dtype != object:
-            # Probeer verschillende eenheden
             for unit in ['s', 'ms', 'us', 'ns']:
                 try:
                     temp_df[col] = pd.to_datetime(temp_df[col], unit=unit, errors='coerce')
                     if not temp_df[col].isnull().all():
-                        break  # Stop als conversie gelukt is
+                        break
                 except (FloatingPointError, OverflowError):
                     continue
     
