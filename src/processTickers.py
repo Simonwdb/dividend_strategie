@@ -48,7 +48,10 @@ class StockDataProcessor:
 
     def get_single_ticker_data(self, ticker: str) -> dict:
         ticker_yf = yf.Ticker(ticker=ticker)
-        info = ticker_yf.info
+        try:
+            info = ticker_yf.info
+        except AttributeError as e:
+            self.logger.debug(f'Not being able to retrieve info from {ticker}: {str(e)}')
         info = {key: info.get(key, None) for key in self.RELEVANT_KEYS}
 
         try:
