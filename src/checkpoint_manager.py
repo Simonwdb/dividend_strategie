@@ -23,3 +23,10 @@ class CheckpointManager:
             return pd.DataFrame()
         temp_df = pd.concat([pd.read_parquet(f) for f in chunk_files], ignore_index=True)
         return temp_df
+
+    def load_failed_tickers(self) -> Set[str]:
+        if not self.failed_tickers_path.exists():
+            return set()
+        
+        with open(self.failed_tickers_path, 'r') as f:
+            return set(json.load(f))
