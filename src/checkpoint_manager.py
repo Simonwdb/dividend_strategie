@@ -30,3 +30,10 @@ class CheckpointManager:
         
         with open(self.failed_tickers_path, 'r') as f:
             return set(json.load(f))
+        
+    def save_failed_tickers(self, failed_tickers: Set[str]) -> None:
+        existing = self.load_failed_tickers()
+        combined = existing.union(failed_tickers)
+
+        with open(self.failed_tickers_path, 'w') as f:
+            json.dump(list(combined), f)
