@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 from pathlib import Path
-from typing import Set, List, Tuple
+from typing import Set, Optional
 
 
 class CheckpointManager:
@@ -52,3 +52,8 @@ class CheckpointManager:
 
         return processed
         
+    def cleanup(self, keep_last_n: Optional[int] = None) -> None:
+        if keep_last_n is not None:
+            chunk_files = sorted(self.checkpoint_dir.glob['chunk_*.parquet'])
+            for f in chunk_files[:-keep_last_n]:
+                f.unlink()
