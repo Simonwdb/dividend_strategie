@@ -37,3 +37,18 @@ class CheckpointManager:
 
         with open(self.failed_tickers_path, 'w') as f:
             json.dump(list(combined), f)
+
+    def get_processed_tickers(self) -> Set[str]:
+        processed = set()
+        chunk_df = self.load_chunks()
+
+        if chunk_df.empty:
+            return set()
+        
+        if 'ticker' in chunk_df.columns:
+            processed.update(chunk_df['ticker'].to_list())
+        
+        processed.update(self.load_failed_tickers())
+
+        return processed
+        
