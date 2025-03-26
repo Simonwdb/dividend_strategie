@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 from pathlib import Path
-from typing import Set, Optional
+from typing import Set, Optional, Union
 
 
 class CheckpointManager:
@@ -31,8 +31,11 @@ class CheckpointManager:
         with open(self.failed_tickers_path, 'r') as f:
             return set(json.load(f))
         
-    def save_failed_tickers(self, failed_tickers: Set[str]) -> None:
+    def save_failed_tickers(self, failed_tickers: Union[Set[str], str]) -> None:
         existing = self.load_failed_tickers()
+        if isinstance(failed_tickers, str):
+            failed_tickers = {failed_tickers}
+
         combined = existing.union(failed_tickers)
 
         with open(self.failed_tickers_path, 'w') as f:
