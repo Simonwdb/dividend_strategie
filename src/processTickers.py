@@ -7,7 +7,7 @@ from typing import List
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from checkpoint_manager import CheckpointManager
+from src.checkpoint_manager import CheckpointManager
 
 checkpoint_manager = CheckpointManager()
 class StockDataProcessor:
