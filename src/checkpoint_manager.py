@@ -5,7 +5,7 @@ from typing import Set, Optional, Union
 
 
 class CheckpointManager:
-    def __init__(self, checkpoint_dir: str = '../data/checkpoint'):
+    def __init__(self, checkpoint_dir: str = '../data.nosync/checkpoint'):
         self.checkpoint_dir = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         self.failed_tickers_path = self.checkpoint_dir / 'failed.json'

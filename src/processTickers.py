@@ -34,7 +34,7 @@ class StockDataProcessor:
         'trailingAnnualDividendYield', 'earningsQuarterlyGrowth', 'revenueGrowth'
     ]
 
-    def __init__(self, db_path: str = '../data/database/stock_data.db'):
+    def __init__(self, db_path: str = '../data.nosync/database/stock_data.db'):
         self.db_path = db_path
         self._setup_logging()
     
