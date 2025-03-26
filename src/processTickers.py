@@ -138,7 +138,7 @@ class StockDataProcessor:
     def save_to_database(self, df: pd.DataFrame, table_name: str) -> None:
         with sqlite3.connect(self.db_path) as conn:
             df.to_sql(table_name, conn, if_exists='append', index=False)
-            self.logger.info(f'Data successfully saved in {self.db_path} (table: {table_name})')
+            self.logger.info(f'Data successfully saved in {self.db_path} amount of new records: {len(df)} (table: {table_name})')
 
     def process_and_save(self, ticker_list: List[str], table_name: str, use_parallel: bool = True, max_workers: int = 5, batch_size: int = 100) -> None:
         if use_parallel:
