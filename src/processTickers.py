@@ -59,12 +59,13 @@ class StockDataProcessor:
             self.logger.debug(f'Not being able to retrieve info from {ticker}: {str(e)}')
             checkpoint_manager.save_failed_tickers(failed_tickers=ticker)
             return dict()
-        
-        try:
-            price_target = ticker_yf.get_analyst_price_targets()['current']
-        except KeyError as e:
-            price_target = None
-            self.logger.debug(f'Price target not available for {ticker}: {str(e)}')
+
+        price_target = None        
+        # try:
+        #     price_target = ticker_yf.get_analyst_price_targets()['current']
+        # except KeyError as e:
+        #     price_target = None
+        #     self.logger.debug(f'Price target not available for {ticker}: {str(e)}')
         
         info['priceTarget'] = price_target
         info['ticker'] = ticker
@@ -136,7 +137,7 @@ class StockDataProcessor:
     
     def save_to_database(self, df: pd.DataFrame, table_name: str) -> None:
         with sqlite3.connect(self.db_path) as conn:
-            df.to_sql(table_name, conn, if_exists='replace', index=False)
+            df.to_sql(table_name, conn, if_exists='append', index=False)
             self.logger.info(f'Data successfully saved in {self.db_path} (table: {table_name})')
 
     def process_and_save(self, ticker_list: List[str], table_name: str, use_parallel: bool = True, max_workers: int = 5, batch_size: int = 100) -> None:
