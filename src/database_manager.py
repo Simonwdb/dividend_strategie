@@ -49,7 +49,6 @@ class DatabaseManager:
                 raise TypeError('Invalid datatype, expected str, set[str] or pd.DataFrame')
     
     def save_parquet(self, df: pd.DataFrame, ticker: str, compression: str = 'zstd') -> None:
-        print(self.parquet_dir)
         path = self.parquet_dir + f'/{ticker}.parquet'
         df.to_parquet(
             path=path,
