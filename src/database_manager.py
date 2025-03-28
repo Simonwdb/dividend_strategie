@@ -1,14 +1,15 @@
 import sqlite3
 import pandas as pd
-from typing import Union
+from pathlib import Path
+from typing import Union, Set
 
 
 class DatabaseManager:
     def __init__(self, 
-                 db_path: str = '../data.nosync/database/stock_data.db',
-                 parquet_dir: str = '../data.nosync/database/parquet'):
-        self.db_path = db_path
-        self.parquet_dir = parquet_dir
+                 db_path: Union[str, Path] = '../data.nosync/database/stock_data.db',
+                 parquet_dir: Union[str, Path] = '../data.nosync/database/parquet'):
+        self.db_path = Path(db_path)
+        self.parquet_dir = Path(parquet_dir)
 
     def load_table(self, table_name: str) -> pd.DataFrame:
         with sqlite3.connect(self.db_path) as conn:
@@ -20,7 +21,7 @@ class DatabaseManager:
             return pd.DataFrame(data, columns=[x[0] for x in cursor.description])
 
     def load_parquet(self, ticker: str) -> pd.DataFrame:
-        path = self.parquet_dir + f'/{ticker}.parquet'
+        path = self.parquet_dir / f'{ticker}.parquet'
         parq_df = pd.read_parquet(path)
         return parq_df
     
@@ -49,7 +50,7 @@ class DatabaseManager:
                 raise TypeError('Invalid datatype, expected str, set[str] or pd.DataFrame')
     
     def save_parquet(self, df: pd.DataFrame, ticker: str, compression: str = 'zstd') -> None:
-        path = self.parquet_dir + f'/{ticker}.parquet'
+        path = self.parquet_dir / f'{ticker}.parquet'
         df.to_parquet(
             path=path,
             engine='pyarrow',
