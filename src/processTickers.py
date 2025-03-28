@@ -131,18 +131,3 @@ class StockDataProcessor:
         remaining_cols = [col for col in existing_cols if col not in self.FAV_COLS]
         column_order = self.FAV_COLS + remaining_cols
         return temp_df[column_order]
-    
-    def save_to_database(self, df: pd.DataFrame, table_name: str) -> None:
-        with sqlite3.connect(self.db_path) as conn:
-            df.to_sql(table_name, conn, if_exists='append', index=False)
-            self.logger.info(f'Data successfully saved in {self.db_path} amount of new records: {len(df)} (table: {table_name})')
-
-    def process_and_save(self, ticker_list: List[str], table_name: str, use_parallel: bool = True, max_workers: int = 5, batch_size: int = 100) -> None:
-        if use_parallel:
-            df = self.fetch_tickers_data(ticker_list, max_workers=max_workers, batch_size=batch_size)
-        else:
-            df = self.get_stock_data(ticker_list)
-        
-        df = self.convert_timestamps(df)
-        df = self.rearrange_columns(df)
-        self.save_to_database(df, table_name)
