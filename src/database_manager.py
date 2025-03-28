@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 from pathlib import Path
-from typing import Union, Set
+from typing import Union, Set, List
 
 
 class DatabaseManager:
@@ -27,6 +27,13 @@ class DatabaseManager:
         path = self.parquet_dir / f'{ticker}.parquet'
         parq_df = pd.read_parquet(path)
         return parq_df
+    
+    def load_tickers_from_parquet(self) -> List[str]:
+        if not self.parquet_dir.exists():
+            return {}
+        parquet_list = [file.stem for file in self.parquet_dir.glob('*.parquet') if file.is_file()]
+        return set(parquet_list)
+
     
     def remove_table(self, table_name: str) -> None:
         with sqlite3.connect(self.db_path) as conn:
