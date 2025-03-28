@@ -59,5 +59,15 @@ class DatabaseManager:
     def save_failed_tickers(self, failed_tickers: Union[str, set[str]]) -> None:
         self.save_data(failed_tickers, table_name='failed_tickers')
 
-    def save_dataframe(self, df: pd.DataFrame, table_name: str) -> None:
-        self.save_data(data=df, table_name=table_name)
+    def save_dataframe(self, 
+                       df: pd.DataFrame, 
+                       ticker: str, 
+                       addition_name: str = '', 
+                       storage_type: str = 'sqlite') -> None:
+        table_name = ticker + addition_name
+        if storage_type.lower() == 'sqlite':
+            self.save_data(data=df, table_name=table_name)
+        elif storage_type.lower() == 'parquet':
+            self.save_parquet(df, ticker)
+        else:
+            raise ValueError('storage_type must be "parquet" or "sqlite"')
