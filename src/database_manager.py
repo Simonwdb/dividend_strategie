@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 from pathlib import Path
-from typing import Union, Set, List
+from typing import Union, Set, List, Optional, Literal
 
 
 class DatabaseManager:
@@ -73,12 +73,14 @@ class DatabaseManager:
     def save_dataframe(self, 
                        df: pd.DataFrame, 
                        ticker: str, 
-                       addition_name: str = '', 
-                       storage_type: str = 'sqlite') -> None:
-        table_name = ticker + addition_name
-        if storage_type.lower() == 'sqlite':
+                       custom_name: Optional[str] = None, 
+                       storage_type: Literal['sqlite', 'parquet'] = 'sqlite') -> None:
+        table_name = custom_name if custom_name else ticker
+        storage_type = storage_type.lower()
+        
+        if storage_type == 'sqlite':
             self.save_data(data=df, table_name=table_name)
-        elif storage_type.lower() == 'parquet':
+        elif storage_type == 'parquet':
             self.save_parquet(df, ticker)
         else:
             raise ValueError('storage_type must be "parquet" or "sqlite"')
