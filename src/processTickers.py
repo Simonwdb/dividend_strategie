@@ -117,8 +117,10 @@ class StockDataProcessor:
             return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends'])
         hist_df.index = pd.to_datetime(hist_df.index, errors='coerce')
         hist_df[['Close', 'Open']] = round(hist_df[['Close', 'Open']], 2)
+        hist_df = hist_df.reset_index()
+        hist_df['ticker'] = ticker
 
-        return hist_df[['Open', 'Close', 'Dividends']]
+        return hist_df[['Date', 'Open', 'Close', 'Dividends', 'ticker']]
 
     @staticmethod
     def convert_timestamps(df: pd.DataFrame) -> pd.DataFrame:
