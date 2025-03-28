@@ -7,9 +7,7 @@ from typing import List
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from src.checkpoint_manager import CheckpointManager
 
-checkpoint_manager = CheckpointManager()
 class StockDataProcessor:
     RELEVANT_KEYS = ['city', 'state', 'zip', 'country', 'industry', 'sector', 'fullTimeEmployees', 'auditRisk', 'boardRisk', 'compensationRisk', 'shareHolderRightsRisk', 
                  'overallRisk', 'compensationAsOfEpochDate', 'priceHint', 'previousClose', 'open', 'dayLow', 'dayHigh', 'regularMarketPreviousClose', 'regularMarketOpen', 
@@ -57,7 +55,6 @@ class StockDataProcessor:
             info = {key: info.get(key, None) for key in self.RELEVANT_KEYS}
         except AttributeError as e:
             self.logger.debug(f'Not being able to retrieve info from {ticker}: {str(e)}')
-            checkpoint_manager.save_failed_tickers(failed_tickers=ticker)
             return dict()
 
         price_target = None        
