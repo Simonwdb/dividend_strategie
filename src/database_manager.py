@@ -16,6 +16,12 @@ class DatabaseManager:
             data = cursor.fetchall()
             return pd.DataFrame(data, columns=[x[0] for x in cursor.description])
 
+    def remove_table(self, table_name: str) -> None:
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'DROP TABLE IF EXISTS {table_name}')
+            conn.commit()
+    
     def save_data(self, data: Union[str, set[str], pd.DataFrame], table_name: str, if_exists: str = 'append') -> None:
         with sqlite3.connect(self.db_path) as conn:
             if isinstance(data, (str, set)):
