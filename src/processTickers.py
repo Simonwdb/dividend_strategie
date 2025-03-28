@@ -32,7 +32,7 @@ class StockDataProcessor:
         'trailingAnnualDividendYield', 'earningsQuarterlyGrowth', 'revenueGrowth'
     ]
 
-    def __init__(self, start_date: datetime = datetime(2000, 1, 1), end_date: datetime = datetime(2024, 12, 30)):
+    def __init__(self, start_date: datetime = datetime(2010, 1, 1), end_date: datetime = datetime(2024, 12, 30)):
         self.start_date = start_date
         self.end_date = end_date
         self._setup_logging()
@@ -108,6 +108,15 @@ class StockDataProcessor:
         self.logger.info(f'Successfully added {len(result_df)} records')
         return result_df
     
+    def get_historical_data(self, ticker: str) -> pd.DataFrame:
+        ticker_yf = yf.Ticker(ticker)
+        hist_df = ticker_yf.history(start=self.start_date, end=self.end_date)
+        hist_df.index = hist_df.index.strftime('%Y-%m-%d')
+        hist_df.index = pd.to_datetime(hist_df.index, errors='coerce')
+        hist_df[['Close', 'Open']] = round(hist_df[['Close', 'Open']], 2)
+
+        return hist_df[['Open', 'Close', 'Dividends']]
+
     @staticmethod
     def convert_timestamps(df: pd.DataFrame) -> pd.DataFrame:
         temp_df = df.copy()
