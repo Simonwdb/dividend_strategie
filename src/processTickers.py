@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class StockDataProcessor:
-    RELEVANT_KEYS = ['city', 'state', 'zip', 'country', 'industry', 'sector', 'fullTimeEmployees', 'auditRisk', 'boardRisk', 'compensationRisk', 'shareHolderRightsRisk', 
+    RELEVANT_KEYS_STOCK_DATA = ['city', 'state', 'zip', 'country', 'industry', 'sector', 'fullTimeEmployees', 'auditRisk', 'boardRisk', 'compensationRisk', 'shareHolderRightsRisk', 
                  'overallRisk', 'compensationAsOfEpochDate', 'priceHint', 'previousClose', 'open', 'dayLow', 'dayHigh', 'regularMarketPreviousClose', 'regularMarketOpen', 
                  'regularMarketDayLow', 'regularMarketDayHigh', 'dividendRate', 'dividendYield', 'exDividendDate', 'payoutRatio', 'fiveYearAvgDividendYield', 'beta', 'trailingPE', 
                  'forwardPE', 'volume', 'regularMarketVolume', 'averageVolume', 'averageVolume10days', 'averageDailyVolume10Day', 'bid', 'ask', 'bidSize', 'askSize', 'marketCap', 
@@ -26,7 +26,7 @@ class StockDataProcessor:
                  'priceEpsCurrentYear', 'fiftyDayAverageChange', 'fiftyDayAverageChangePercent', 'twoHundredDayAverageChange', 'twoHundredDayAverageChangePercent', 'sourceInterval', 'cryptoTradeable']
 
 
-    FAV_COLS = [
+    FAV_COLS_STOCK_DATA = [
         'ticker', 'longName', 'open', 'dayLow', 'dayHigh', 'previousClose', 'priceTarget', 'fiftyTwoWeekLow', 'fiftyTwoWeekHigh', 'fiftyDayAverageChange', 
         'lastDividendValue', 'lastDividendDate', 'dividendYield', 'exDividendDate', 'dividendDate', 'fiveYearAvgDividendYield', 'trailingAnnualDividendRate', 
         'trailingAnnualDividendYield', 'earningsQuarterlyGrowth', 'revenueGrowth'
@@ -52,7 +52,7 @@ class StockDataProcessor:
         ticker_yf = yf.Ticker(ticker=ticker)
         try:
             info = ticker_yf.info
-            info = {key: info.get(key, None) for key in self.RELEVANT_KEYS}
+            info = {key: info.get(key, None) for key in self.RELEVANT_KEYS_STOCK_DATA}
         except AttributeError as e:
             self.logger.debug(f'Not being able to retrieve info from {ticker}: {str(e)}')
             return dict()
@@ -128,6 +128,6 @@ class StockDataProcessor:
     def rearrange_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         temp_df = df.copy()
         existing_cols = temp_df.columns
-        remaining_cols = [col for col in existing_cols if col not in self.FAV_COLS]
-        column_order = self.FAV_COLS + remaining_cols
+        remaining_cols = [col for col in existing_cols if col not in self.FAV_COLS_STOCK_DATA]
+        column_order = self.FAV_COLS_STOCK_DATA + remaining_cols
         return temp_df[column_order]
