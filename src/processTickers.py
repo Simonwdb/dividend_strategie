@@ -124,26 +124,24 @@ class StockDataProcessor:
     
     def fetch_historical_data(self, ticker_list: List[str], max_workers: int = 5, batch_size: int = 100) -> pd.DataFrame:
         all_results = []
-        
-        for i in range(0, len(ticker_list), batch_size):
-            batch = ticker_list[i:i + batch_size]
-            
-            with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                future_to_ticker = {
-                    executor.submit(self.get_historical_data, ticker): ticker 
-                    for ticker in batch
-                }
 
-                for future in as_completed(future_to_ticker):
-                    ticker = future_to_ticker[future]
-                    try:
-                        result = future.result()
-                        if result:
-                            all_results.append(result)
-                    except Exception as e:
-                        self.logger.error(f'Unexpected error with {ticker}: {str(e)}')
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(
+                    self.get_historical_data,
+                    t
+                ): t for t in ticker_list
+            }
+
+            for future in as_completed(futures):
+                result = future.result()
+                if result is not None:
+                    all_results.append(result)
         
-        return pd.concat(all_results)
+        if all_results:
+            return pd.concat(all_results, ignore_index=True)
+        else:      
+            return pd.concat()
 
     @staticmethod
     def convert_timestamps(df: pd.DataFrame) -> pd.DataFrame:

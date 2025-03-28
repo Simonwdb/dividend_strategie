@@ -81,6 +81,6 @@ class DatabaseManager:
         if storage_type == 'sqlite':
             self.save_data(data=df, table_name=table_name)
         elif storage_type == 'parquet':
-            self.save_parquet(df, ticker)
+            self.save_parquet(df=df, ticker=ticker)
         else:
             raise ValueError('storage_type must be "parquet" or "sqlite"')
