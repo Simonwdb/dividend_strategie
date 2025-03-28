@@ -33,3 +33,9 @@ class DatabaseManager:
             
             else:
                 raise TypeError('Invalid datatype, expected str, set[str] or pd.DataFrame')
+    
+    def save_failed_tickers(self, failed_tickers: Union[str, set[str]]) -> None:
+        self.save_data(failed_tickers, table_name='failed_tickers')
+
+    def save_dataframe(self, df: pd.DataFrame, table_name: str) -> None:
+        self.save_data(data=df, table_name=table_name)
