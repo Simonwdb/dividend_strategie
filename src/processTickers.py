@@ -110,8 +110,11 @@ class StockDataProcessor:
     
     def get_historical_data(self, ticker: str) -> pd.DataFrame:
         ticker_yf = yf.Ticker(ticker)
-        hist_df = ticker_yf.history(start=self.start_date, end=self.end_date)
-        hist_df.index = hist_df.index.strftime('%Y-%m-%d')
+        try:
+            hist_df = ticker_yf.history(start=self.start_date, end=self.end_date)
+            hist_df.index = hist_df.index.strftime('%Y-%m-%d')
+        except AttributeError as e:
+            return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends'])
         hist_df.index = pd.to_datetime(hist_df.index, errors='coerce')
         hist_df[['Close', 'Open']] = round(hist_df[['Close', 'Open']], 2)
 
