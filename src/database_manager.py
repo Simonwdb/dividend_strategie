@@ -11,6 +11,9 @@ class DatabaseManager:
         self.db_path = Path(db_path)
         self.parquet_dir = Path(parquet_dir)
 
+        self.parquet_dir.mkdir(parents=True, exist_ok=True)
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+
     def load_table(self, table_name: str) -> pd.DataFrame:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
