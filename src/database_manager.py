@@ -4,8 +4,11 @@ from typing import Union
 
 
 class DatabaseManager:
-    def __init__(self, db_path: str = '../data.nosync/database/stock_data.db'):
+    def __init__(self, 
+                 db_path: str = '../data.nosync/database/stock_data.db',
+                 parquet_dir: str = '../data.nosync/database/parquet'):
         self.db_path = db_path
+        self.parquet_dir = parquet_dir
 
     def load_table(self, table_name: str) -> pd.DataFrame:
         with sqlite3.connect(self.db_path) as conn:
@@ -16,6 +19,11 @@ class DatabaseManager:
             data = cursor.fetchall()
             return pd.DataFrame(data, columns=[x[0] for x in cursor.description])
 
+    def load_parquet(self, ticker: str) -> pd.DataFrame:
+        path = self.parquet_dir / f'{ticker}.parquet'
+        parq_df = pd.read_parquet(path)
+        return parq_df
+    
     def remove_table(self, table_name: str) -> None:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
