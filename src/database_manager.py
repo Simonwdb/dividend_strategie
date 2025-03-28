@@ -48,6 +48,14 @@ class DatabaseManager:
             else:
                 raise TypeError('Invalid datatype, expected str, set[str] or pd.DataFrame')
     
+    def save_parquet(self, df: pd.DataFrame, ticker: str, compression: str = 'zstd') -> None:
+        path = self.parquet_dir / f'{ticker}.parquet'
+        df.to_parquet(
+            path=path,
+            engine='pyarrow',
+            compression=compression
+        )
+    
     def save_failed_tickers(self, failed_tickers: Union[str, set[str]]) -> None:
         self.save_data(failed_tickers, table_name='failed_tickers')
 
