@@ -20,7 +20,7 @@ class DatabaseManager:
             return pd.DataFrame(data, columns=[x[0] for x in cursor.description])
 
     def load_parquet(self, ticker: str) -> pd.DataFrame:
-        path = self.parquet_dir / f'{ticker}.parquet'
+        path = self.parquet_dir + f'/{ticker}.parquet'
         parq_df = pd.read_parquet(path)
         return parq_df
     
@@ -49,7 +49,8 @@ class DatabaseManager:
                 raise TypeError('Invalid datatype, expected str, set[str] or pd.DataFrame')
     
     def save_parquet(self, df: pd.DataFrame, ticker: str, compression: str = 'zstd') -> None:
-        path = self.parquet_dir / f'{ticker}.parquet'
+        print(self.parquet_dir)
+        path = self.parquet_dir + f'/{ticker}.parquet'
         df.to_parquet(
             path=path,
             engine='pyarrow',
