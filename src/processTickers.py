@@ -32,7 +32,9 @@ class StockDataProcessor:
         'trailingAnnualDividendYield', 'earningsQuarterlyGrowth', 'revenueGrowth'
     ]
 
-    def __init__(self):
+    def __init__(self, start_date: datetime = datetime(2000, 1, 1), end_date: datetime = datetime(2024, 12, 30)):
+        self.start_date = start_date
+        self.end_date = end_date
         self._setup_logging()
     
     def _setup_logging(self):
