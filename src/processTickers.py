@@ -1,6 +1,7 @@
 import logging
 import sqlite3
 import logging
+import numpy as np
 import pandas as pd
 import yfinance as yf
 from typing import List
@@ -109,18 +110,40 @@ class StockDataProcessor:
         return result_df
     
     def get_historical_data(self, ticker: str) -> pd.DataFrame:
-        ticker_yf = yf.Ticker(ticker)
+        base_cols = ['Open', 'Close', 'Dividends']
+        
         try:
+            ticker_yf = yf.Ticker(ticker)
             hist_df = ticker_yf.history(start=self.start_date, end=self.end_date)
-            hist_df.index = hist_df.index.strftime('%Y-%m-%d')
-        except AttributeError as e:
-            return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends', 'ticker'])
-        hist_df.index = pd.to_datetime(hist_df.index, errors='coerce')
-        hist_df[['Close', 'Open']] = round(hist_df[['Close', 'Open']], 2)
-        hist_df = hist_df.reset_index()
-        hist_df['ticker'] = ticker
 
-        return hist_df[['Date', 'Open', 'Close', 'Dividends', 'ticker']]
+            for col in base_cols:
+                if col not in hist_df.columns:
+                    hist_df[col] = np.nan
+            
+            hist_df.index = hist_df.index.strftime('%Y-%m-%d')
+            hist_df = hist_df.reset_index()
+            hist_df['Ticker'] = ticker
+
+            hist_df.columns = hist_df.columns.str.capitalize()
+            hist_df.rename(columns={'Date': 'Date'}, inplace=True)
+
+            return hist_df[['Date', 'Open', 'Close', 'Dividends', 'Ticker']]
+
+        except AttributeError as e:
+            return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends', 'Ticker'])
+
+        # ticker_yf = yf.Ticker(ticker)
+        # try:
+        #     hist_df = ticker_yf.history(start=self.start_date, end=self.end_date)
+        #     hist_df.index = hist_df.index.strftime('%Y-%m-%d')
+        # except AttributeError as e:
+        #     return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends', 'ticker'])
+        # hist_df.index = pd.to_datetime(hist_df.index, errors='coerce')
+        # hist_df[['Close', 'Open']] = round(hist_df[['Close', 'Open']], 2)
+        # hist_df = hist_df.reset_index()
+        # hist_df['ticker'] = ticker
+
+        # return hist_df[['Date', 'Open', 'Close', 'Dividends', 'ticker']]
     
     def fetch_historical_data(self, ticker_list: List[str], max_workers: int = 5, batch_size: int = 100) -> pd.DataFrame:
         all_results = []
