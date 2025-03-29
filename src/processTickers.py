@@ -114,7 +114,7 @@ class StockDataProcessor:
             hist_df = ticker_yf.history(start=self.start_date, end=self.end_date)
             hist_df.index = hist_df.index.strftime('%Y-%m-%d')
         except AttributeError as e:
-            return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends'])
+            return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends', 'ticker'])
         hist_df.index = pd.to_datetime(hist_df.index, errors='coerce')
         hist_df[['Close', 'Open']] = round(hist_df[['Close', 'Open']], 2)
         hist_df = hist_df.reset_index()
@@ -138,7 +138,9 @@ class StockDataProcessor:
                 if result is not None:
                     all_results.append(result)
         
-        if all_results:
+        non_empty_results = [df for df in all_results if not df.empty]
+        
+        if non_empty_results:
             return pd.concat(all_results, ignore_index=True)
         else:      
             return pd.concat()
