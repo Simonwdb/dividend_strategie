@@ -111,7 +111,7 @@ class StockDataProcessor:
     
     def get_historical_data(self, ticker: str) -> pd.DataFrame:
         base_cols = ['Open', 'Close', 'Dividends']
-        
+
         try:
             ticker_yf = yf.Ticker(ticker)
             hist_df = ticker_yf.history(start=self.start_date, end=self.end_date)
@@ -131,42 +131,32 @@ class StockDataProcessor:
 
         except AttributeError as e:
             return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends', 'Ticker'])
-
-        # ticker_yf = yf.Ticker(ticker)
-        # try:
-        #     hist_df = ticker_yf.history(start=self.start_date, end=self.end_date)
-        #     hist_df.index = hist_df.index.strftime('%Y-%m-%d')
-        # except AttributeError as e:
-        #     return pd.DataFrame(columns=['Date', 'Open', 'Close', 'Dividends', 'ticker'])
-        # hist_df.index = pd.to_datetime(hist_df.index, errors='coerce')
-        # hist_df[['Close', 'Open']] = round(hist_df[['Close', 'Open']], 2)
-        # hist_df = hist_df.reset_index()
-        # hist_df['ticker'] = ticker
-
-        # return hist_df[['Date', 'Open', 'Close', 'Dividends', 'ticker']]
     
     def fetch_historical_data(self, ticker_list: List[str], max_workers: int = 5, batch_size: int = 100) -> pd.DataFrame:
         all_results = []
+        expected_columns = ['Date', 'Open', 'Close', 'Dividends', 'Ticker']
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = {
-                executor.submit(
-                    self.get_historical_data,
-                    t
-                ): t for t in ticker_list
-            }
+            futures = {executor.submit(self.get_historical_data, t): t for t in ticker_list}
 
             for future in as_completed(futures):
                 result = future.result()
-                if result is not None:
+                
+                if result is not None and not result.empty:
+                    missing_cols = set(expected_columns) - set(result.columns)
+                    if missing_cols:
+                        for col in missing_cols:
+                            result[col] = np.nan
+                    
+                    result = result[expected_columns]
                     all_results.append(result)
         
-        non_empty_results = [df for df in all_results if not df.empty]
-        
-        if non_empty_results:
-            return pd.concat(all_results, ignore_index=True)
+        if all_results:
+            final_df = pd.concat(all_results, ignore_index=True)
+            final_df['Date'] = pd.to_datetime(final_df['Date'], errors='coerce')
+            return final_df
         else:      
-            return pd.concat()
+            return pd.DataFrame(columns=expected_columns)
 
     @staticmethod
     def convert_timestamps(df: pd.DataFrame) -> pd.DataFrame:
